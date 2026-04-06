@@ -20,6 +20,8 @@ final class Config {
 
   final Map<String, Object> _configObjects;
 
+  List<Object> get extensions => _configObjects.values.toList();
+
   static const _missingSectionReason = 'missing_section';
   static const _missingKeyReason = 'missing_key';
 
