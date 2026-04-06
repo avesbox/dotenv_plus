@@ -1,4 +1,5 @@
 import 'package:dotenv_plus/dotenv_plus.dart';
+import 'package:dotenv_plus/src/config_builder.dart';
 import 'package:test/test.dart';
 
 class TestConfigSource implements ConfigSource {
@@ -9,6 +10,26 @@ class TestConfigSource implements ConfigSource {
   @override
   Future<Map<String, dynamic>> load() async {
     return _data;
+  }
+}
+
+class TestConfigMapper {
+  final String key;
+
+  TestConfigMapper(this.key);
+
+  factory TestConfigMapper.fromKey(String key) {
+    return TestConfigMapper(key);
+  }
+}
+
+class ApiConfigMapper {
+  final String key;
+
+  ApiConfigMapper(this.key);
+
+  factory ApiConfigMapper.fromKey(String key) {
+    return ApiConfigMapper(key);
   }
 }
 
@@ -101,5 +122,53 @@ void main() {
       ),
       throwsException,
     );
+  });
+
+  test('Schema validation passes with valid config', () async {
+    final config = await Config.load(
+      sources: [
+        TestConfigSource({'port': 8080}),
+      ],
+      schema: (values) {
+        if (values['port'] is! int) {
+          throw Exception('Port must be an integer');
+        }
+        return values;
+      },
+    );
+
+    expect(config.values['port'], 8080);
+  });
+
+  test('ConfigMapper transforms config values', () async {
+    void Function(ConfigBuilder builder) dbConfig() {
+      return (ConfigBuilder builder) {
+        builder.map<TestConfigMapper>('db', (ctx) {
+          print(ctx.section);
+          return TestConfigMapper.fromKey(ctx.section['host'] as String);
+        });
+      };
+    }
+
+    void Function(ConfigBuilder builder) apiConfig() {
+      return (ConfigBuilder builder) {
+        builder.map<ApiConfigMapper>('api', (ctx) {
+          return ApiConfigMapper.fromKey(
+            ctx.get<TestConfigMapper>('db')?.key as String,
+          );
+        });
+      };
+    }
+
+    final config = await Config.load(
+      sources: [
+        TestConfigSource({'key': 'value', 'db.host': 'localhost'}),
+      ],
+      useSectionKeys: true,
+      extensions: [dbConfig(), apiConfig()],
+    );
+
+    expect(config.get<TestConfigMapper>('db')?.key, 'localhost');
+    expect(config.getOrThrow('db').key, 'localhost');
   });
 }
