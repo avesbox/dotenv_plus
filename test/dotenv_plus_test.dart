@@ -1,5 +1,4 @@
 import 'package:dotenv_plus/dotenv_plus.dart';
-import 'package:dotenv_plus/src/config_builder.dart';
 import 'package:test/test.dart';
 
 class TestConfigSource implements ConfigSource {

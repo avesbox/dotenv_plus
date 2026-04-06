@@ -1,3 +1,4 @@
+/// The context passed to ConfigFactory functions, allowing them to access the current config section and other mapped configs.
 class ConfigContext {
   /// The current section (already scoped)
   final Map<String, dynamic> section;
@@ -8,6 +9,7 @@ class ConfigContext {
 
   final String _sectionSeparator;
 
+  /// A constant constructor for the ConfigContext class, allowing it to be used as a compile-time constant.
   const ConfigContext(
     this.section,
     this._definedObjects,
@@ -74,13 +76,17 @@ class ConfigContext {
   }
 }
 
+/// A type definition for a function that takes a ConfigContext and returns an instance of type T.
 typedef ConfigFactory<T> = T Function(ConfigContext context);
 
+/// A builder class that allows registering ConfigFactory functions for specific keys, which can then be used to create mapped config objects.
 class ConfigBuilder {
   final _factories = <String, ConfigFactory>{};
 
+  /// A getter that returns an unmodifiable view of the registered factories, allowing external code to access the factories without modifying them.
   Map<String, ConfigFactory> get factories => Map.unmodifiable(_factories);
 
+  /// Registers a ConfigFactory function for a specific key, allowing it to be used to create mapped config objects when the configuration is loaded.
   void map<T>(String key, ConfigFactory<T> factory) {
     _factories[key] = factory;
   }
