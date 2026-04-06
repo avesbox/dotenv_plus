@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2
+
+- Updated readme
+
 ## 1.1.1
 
 - Added a getter for extensions in the Config class to allow access to all mapped config objects as a list.

@@ -1,6 +1,6 @@
 name: dotenv_plus
 description: A powerful and flexible .env file parser for Dart, supporting nested keys, type conversion, and variable interpolation.
-version: 1.1.1
+version: 1.1.2
 repository: https://github.com/avesbox/dotenv_plus
 homepage: https://github.com/avesbox/dotenv_plus
 documentation: https://github.com/avesbox/dotenv_plus
