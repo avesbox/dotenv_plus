@@ -21,16 +21,13 @@ void main() async {
       DotEnv('.env'),
       SystemEnv(),
     ],
-    builder: (builder) {
-      builder.map('DATABASE', (context) {
-        return DatabaseConfig(
-          host: context.get<String>('DATABASE.HOST'),
-          port: context.get<int>('DATABASE.PORT'),
-          username: context.get<String>('DATABASE.USERNAME'),
-          password: context.get<String>('DATABASE.PASSWORD'),
-        );
-      });
-    },
+    extensions: [
+      return (ConfigBuilder builder) {
+        builder.map<ConfigMapper>('db', (ctx) {
+          return ConfigMapper.fromKey(ctx.section);
+        });
+      };
+    ]
   );
 
   print(config.get<String>('API_URL')); // Output: http://localhost:3000
